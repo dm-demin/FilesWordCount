@@ -55,7 +55,6 @@ public class StatisticProvider : IStatisticProvider
         watcher.EnableRaisingEvents = true;
 
         cancellationToken.WaitHandle.WaitOne();
-
     }
 
     #endregion
@@ -64,9 +63,7 @@ public class StatisticProvider : IStatisticProvider
     
     private static async Task<FileMetadata> AnalyzeFileAsync(string filePath)
     {
-        using StreamReader fileStream = new(filePath);
-        
-        string content = await fileStream.ReadToEndAsync();
+        string content = await File.ReadAllTextAsync(filePath);
         
         return new FileMetadata 
         {
@@ -74,7 +71,6 @@ public class StatisticProvider : IStatisticProvider
             FileName = Path.GetFileName(filePath),
             WordCount = WordCounter.Count(content)
         };
-
     }
 
     private async void OnFileChanged(object sender, FileSystemEventArgs eventArgs)
@@ -86,7 +82,6 @@ public class StatisticProvider : IStatisticProvider
             _results[fileMetadata.Path] = fileMetadata;
         }
         
-
         ShowStatistic();
     }
 

@@ -7,25 +7,29 @@ namespace FilesWordCount.Controllers;
 
 public class ConsoleResultsController : IResultPublisher
 {
+    private static readonly object _lock = new();
+
     /// <inheritdoc/>
     public void Show(IEnumerable<FileMetadata> results)
     {
-        if(!Debugger.IsAttached)
+        lock(_lock)
         {
-            Console.Clear();
-        }        
+            if(!Debugger.IsAttached)
+            {
+                Console.Clear();
+            }        
 
-        Console.WriteLine("| Filename                                 | Words count          |");
-        Console.WriteLine("|------------------------------------------+----------------------|");
+            Console.WriteLine("| Filename                                 | Words count          |");
+            Console.WriteLine("|------------------------------------------+----------------------|");
 
-        var items = results.OrderByDescending(item => item.WordCount).ToList();
-        items.ForEach(item => 
-            Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |")
-        );
-        Console.WriteLine("|------------------------------------------+----------------------|");
+            results.OrderByDescending(item => item.WordCount).ToList().ForEach(item => 
+                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |")
+            );
 
-        Console.WriteLine($"\nLast update: {DateTime.Now}");
-        Console.WriteLine("To exit press Enter...");
+            Console.WriteLine("|------------------------------------------+----------------------|");
 
+            Console.WriteLine($"\nLast update: {DateTime.Now}");
+            Console.WriteLine("To exit press Enter...");
+        }
     }
 }
