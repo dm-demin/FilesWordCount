@@ -4,7 +4,6 @@ public static class WordCounter
 {
     public static int Count(string text, byte minWordLength = 3, string delimiter = " ")
     {
-
         if (text.Length < minWordLength)
         {
             return 0;

@@ -6,7 +6,7 @@ using FilesWordCount.Providers;
 IResultPublisher resultPublisher = new ConsoleResultsController();
 IStatisticProvider statisticProvider = new StatisticProvider(resultPublisher);
 
-string path = Directory.GetCurrentDirectory(); 
+string path = Directory.GetCurrentDirectory();
 
 if (args.Length > 0)
 {
@@ -19,15 +19,14 @@ if (!Directory.Exists(path))
     return;
 }
 
-if(Debugger.IsAttached)
+if (Debugger.IsAttached)
 {
     path = "..\\..\\..\\..\\files";
-}        
-
+}
 
 statisticProvider.AnalyzeFolder(path);
 
-CancellationTokenSource cts = new();
+CancellationTokenSource cts = new ();
 
 #pragma warning disable CS4014 // background task starting.
 Task.Run(() => statisticProvider.MonitorFolder(path, cts.Token));

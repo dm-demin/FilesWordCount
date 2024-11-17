@@ -6,7 +6,7 @@ public static class StringExtensions
     {
         if (incomingText.Length > maxLength)
         {
-            return incomingText[..(maxLength - 1)] + '~';
+            return incomingText[.. (maxLength - 1)] + '~';
         }
 
         if (incomingText.Length < maxLength)
@@ -21,7 +21,7 @@ public static class StringExtensions
     {
         if (incomingText.Length > maxLength)
         {
-            return '~' + incomingText[(incomingText.Length - maxLength - 1)..];
+            return '~' + incomingText[(incomingText.Length - maxLength - 1) ..];
         }
 
         if (incomingText.Length < maxLength)

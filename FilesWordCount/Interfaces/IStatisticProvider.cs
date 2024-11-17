@@ -1,5 +1,8 @@
 namespace FilesWordCount.Interfaces;
 
+/// <summary>
+/// Calculate statistics for files in specific folder/
+/// </summary>
 public interface IStatisticProvider
 {
     /// <summary>

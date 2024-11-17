@@ -7,24 +7,23 @@ namespace FilesWordCount.Controllers;
 
 public class ConsoleResultsController : IResultPublisher
 {
-    private static readonly object _lock = new();
+    private static readonly object _lock = new ();
 
     /// <inheritdoc/>
     public void Show(IEnumerable<FileMetadata> results)
     {
-        lock(_lock)
+        lock (_lock)
         {
-            if(!Debugger.IsAttached)
+            if (!Debugger.IsAttached)
             {
                 Console.Clear();
-            }        
+            }
 
             Console.WriteLine("| Filename                                 | Words count          |");
             Console.WriteLine("|------------------------------------------+----------------------|");
 
-            results.OrderByDescending(item => item.WordCount).ToList().ForEach(item => 
-                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |")
-            );
+            results.OrderByDescending(item => item.WordCount).ToList().ForEach(item =>
+                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |"));
 
             Console.WriteLine("|------------------------------------------+----------------------|");
 
