@@ -49,6 +49,7 @@ public class StatisticProvider : IStatisticProvider
         watcher.Changed += OnFileChanged;
         watcher.Created += OnFileCreated;
         watcher.Deleted += OnFileDeleted;
+        watcher.Renamed += OnFileRenamed;
 
         watcher.IncludeSubdirectories = false;
         watcher.EnableRaisingEvents = true;
@@ -103,16 +104,24 @@ public class StatisticProvider : IStatisticProvider
 
     private void OnFileDeleted(object sender, FileSystemEventArgs eventArgs)
     {
-        _results.Remove(eventArgs.FullPath);
+        
+        lock(_results)
+        {
+            _results.Remove(eventArgs.FullPath);
+        }
 
         ShowStatistic();
     }
 
-    private void OnFileRenamed(object sender, RenamedEventArgs eventArgs)
+    private async void OnFileRenamed(object sender, RenamedEventArgs eventArgs)
     {
-        FileMetadata fileMetadata = _results[eventArgs.OldFullPath]; 
-        _results.Add(eventArgs.FullPath, fileMetadata);
-        _results.Remove(eventArgs.OldFullPath);
+        FileMetadata fileMetadata = await AnalyzeFileAsync(eventArgs.FullPath);
+
+        lock(_results)
+        {
+            _results.Add(eventArgs.FullPath, fileMetadata);
+            _results.Remove(eventArgs.OldFullPath);
+        }
 
         ShowStatistic();
     }
