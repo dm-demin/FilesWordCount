@@ -105,7 +105,7 @@ public class StatisticProvider : IStatisticProvider
     {
         _results.Remove(eventArgs.FullPath);
 
-        _resultPublisher.Show(_results.Values);
+        PrintTop10(_results.Values);
     }
 
     private void OnFileRenamed(object sender, RenamedEventArgs eventArgs)
@@ -120,7 +120,7 @@ public class StatisticProvider : IStatisticProvider
 
     private void PrintTop10(IEnumerable<FileMetadata> data)
     {
-        _resultPublisher.Show(data.OrderByDescending(x => x.WordCount).Take(10));
+        _resultPublisher.Show(data.OrderByDescending(x => x.WordCount).Select(x => (x.FileName, x.WordCount.ToString())).Take(10));
     }
 
     #endregion

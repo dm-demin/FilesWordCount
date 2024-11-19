@@ -1,5 +1,3 @@
-using FilesWordCount.Models;
-
 namespace FilesWordCount.Interfaces;
 
 /// <summary>
@@ -10,6 +8,6 @@ public interface IResultPublisher
     /// <summary>
     /// Display files statistics.
     /// </summary>
-    /// <param name="files">Collection of files metadata.</param>
-    void Show(IEnumerable<FileMetadata> files);
+    /// <param name="values">Collection of files metadata.</param>
+    void Show(IEnumerable<(string, string)> values);
 }

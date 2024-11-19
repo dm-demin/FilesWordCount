@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using FilesWordCount.Extensions;
 using FilesWordCount.Interfaces;
-using FilesWordCount.Models;
 
 namespace FilesWordCount.Controllers;
 
@@ -10,7 +9,7 @@ public class ConsoleResultsPrinter : IResultPublisher
     private static readonly object _lock = new ();
 
     /// <inheritdoc/>
-    public void Show(IEnumerable<FileMetadata> data)
+    public void Show(IEnumerable<(string, string)> values)
     {
         lock (_lock)
         {
@@ -22,9 +21,9 @@ public class ConsoleResultsPrinter : IResultPublisher
             Console.WriteLine("| Filename                                 | Words count          |");
             Console.WriteLine("|------------------------------------------+----------------------|");
 
-            foreach (FileMetadata item in data)
+            foreach ((string key, string value) item in values)
             {
-                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |");
+                Console.WriteLine($"| {item.key.AlignLeft(40)} | {item.value.ToString().AlignRight(20)} |");
             }
 
             Console.WriteLine("|------------------------------------------+----------------------|");
