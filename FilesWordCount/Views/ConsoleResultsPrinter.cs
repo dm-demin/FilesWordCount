@@ -5,12 +5,12 @@ using FilesWordCount.Models;
 
 namespace FilesWordCount.Controllers;
 
-public class ConsoleResultsController : IResultPublisher
+public class ConsoleResultsPrinter : IResultPublisher
 {
     private static readonly object _lock = new ();
 
     /// <inheritdoc/>
-    public void Show(IEnumerable<FileMetadata> results)
+    public void Show(IEnumerable<FileMetadata> data)
     {
         lock (_lock)
         {
@@ -22,8 +22,10 @@ public class ConsoleResultsController : IResultPublisher
             Console.WriteLine("| Filename                                 | Words count          |");
             Console.WriteLine("|------------------------------------------+----------------------|");
 
-            results.OrderByDescending(item => item.WordCount).ToList().ForEach(item =>
-                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |"));
+            foreach (FileMetadata item in data)
+            {
+                Console.WriteLine($"| {item.FileName.AlignLeft(40)} | {item.WordCount.ToString().AlignRight(20)} |");
+            }
 
             Console.WriteLine("|------------------------------------------+----------------------|");
 

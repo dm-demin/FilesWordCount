@@ -9,7 +9,7 @@ public class StatisticProvider : IStatisticProvider
 {
     private readonly IResultPublisher _resultPublisher;
 
-    private readonly Dictionary<string, FileMetadata> _results;
+    private Dictionary<string, FileMetadata> _results;
 
     #region constructor
 
@@ -26,19 +26,11 @@ public class StatisticProvider : IStatisticProvider
     /// <inheritdoc/>
     public void AnalyzeFolder(string path)
     {
-        List<string> filenames = Directory.EnumerateFiles(path).ToList();
+        var filenames = Directory.EnumerateFiles(path, "*.txt");
 
-        filenames.ForEach(async filename =>
-        {
-            FileMetadata fileMetadata = await AnalyzeFileAsync(filename);
+        _results = filenames.Select(x => AnalyzeFile(x)).ToDictionary(x => x.Path);
 
-            lock (_results)
-            {
-                _results.Add(fileMetadata.Path, fileMetadata);
-            }
-        });
-
-        ShowStatistic();
+        PrintTop10(_results.Values);
     }
 
     /// <inheritdoc/>
@@ -61,9 +53,27 @@ public class StatisticProvider : IStatisticProvider
 
     #region private methods
 
-    private static async Task<FileMetadata> AnalyzeFileAsync(string filePath)
+    private static FileMetadata AnalyzeFile(string filePath)
     {
-        string content = await File.ReadAllTextAsync(filePath);
+        string? content = null;
+
+        for (int i = 0; i < 10; i++)
+        {
+            try
+            {
+                content = File.ReadAllText(filePath);
+                break;
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+
+        if (content == null)
+        {
+            throw new IOException("Cannot read file content");
+        }
 
         return new FileMetadata
         {
@@ -73,56 +83,44 @@ public class StatisticProvider : IStatisticProvider
         };
     }
 
-    private async void OnFileChanged(object sender, FileSystemEventArgs eventArgs)
+    private void OnFileChanged(object sender, FileSystemEventArgs eventArgs)
     {
-        FileMetadata fileMetadata = await AnalyzeFileAsync(eventArgs.FullPath);
+        FileMetadata fileMetadata = AnalyzeFile(eventArgs.FullPath);
 
-        lock (_results)
-        {
-            _results[fileMetadata.Path] = fileMetadata;
-        }
+        _results[fileMetadata.Path] = fileMetadata;
 
-        ShowStatistic();
+        PrintTop10(_results.Values);
     }
 
-    private async void OnFileCreated(object sender, FileSystemEventArgs eventArgs)
+    private void OnFileCreated(object sender, FileSystemEventArgs eventArgs)
     {
-        FileMetadata fileMetadata = await AnalyzeFileAsync(eventArgs.FullPath);
+        FileMetadata fileMetadata = AnalyzeFile(eventArgs.FullPath);
 
-        lock (_results)
-        {
-            _results.Add(fileMetadata.Path, fileMetadata);
-        }
+        _results.Add(fileMetadata.Path, fileMetadata);
 
-        ShowStatistic();
+        PrintTop10(_results.Values);
     }
 
     private void OnFileDeleted(object sender, FileSystemEventArgs eventArgs)
     {
-        lock (_results)
-        {
-            _results.Remove(eventArgs.FullPath);
-        }
+        _results.Remove(eventArgs.FullPath);
 
-        ShowStatistic();
-    }
-
-    private async void OnFileRenamed(object sender, RenamedEventArgs eventArgs)
-    {
-        FileMetadata fileMetadata = await AnalyzeFileAsync(eventArgs.FullPath);
-
-        lock (_results)
-        {
-            _results.Add(eventArgs.FullPath, fileMetadata);
-            _results.Remove(eventArgs.OldFullPath);
-        }
-
-        ShowStatistic();
-    }
-
-    private void ShowStatistic()
-    {
         _resultPublisher.Show(_results.Values);
+    }
+
+    private void OnFileRenamed(object sender, RenamedEventArgs eventArgs)
+    {
+        FileMetadata fileMetadata = AnalyzeFile(eventArgs.FullPath);
+
+        _results.Add(eventArgs.FullPath, fileMetadata);
+        _results.Remove(eventArgs.OldFullPath);
+
+        PrintTop10(_results.Values);
+    }
+
+    private void PrintTop10(IEnumerable<FileMetadata> data)
+    {
+        _resultPublisher.Show(data.OrderByDescending(x => x.WordCount).Take(10));
     }
 
     #endregion

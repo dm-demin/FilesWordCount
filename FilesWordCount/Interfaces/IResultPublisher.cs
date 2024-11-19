@@ -2,6 +2,9 @@ using FilesWordCount.Models;
 
 namespace FilesWordCount.Interfaces;
 
+/// <summary>
+/// Provide representation of analysis result.
+/// </summary>
 public interface IResultPublisher
 {
     /// <summary>

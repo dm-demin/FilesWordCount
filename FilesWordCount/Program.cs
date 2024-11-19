@@ -3,7 +3,7 @@ using FilesWordCount.Controllers;
 using FilesWordCount.Interfaces;
 using FilesWordCount.Providers;
 
-IResultPublisher resultPublisher = new ConsoleResultsController();
+IResultPublisher resultPublisher = new ConsoleResultsPrinter();
 IStatisticProvider statisticProvider = new StatisticProvider(resultPublisher);
 
 string path = Directory.GetCurrentDirectory();
