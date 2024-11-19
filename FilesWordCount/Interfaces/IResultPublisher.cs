@@ -9,5 +9,5 @@ public interface IResultPublisher
     /// Display files statistics.
     /// </summary>
     /// <param name="values">Collection of files metadata.</param>
-    void Show(IEnumerable<(string, string)> values);
+    void Show(IEnumerable<(string, string)> values, string keyColumnName, string valueColumnName);
 }

@@ -120,7 +120,10 @@ public class StatisticProvider : IStatisticProvider
 
     private void PrintTop10(IEnumerable<FileMetadata> data)
     {
-        _resultPublisher.Show(data.OrderByDescending(x => x.WordCount).Select(x => (x.FileName, x.WordCount.ToString())).Take(10));
+        _resultPublisher.Show(
+            data.OrderByDescending(x => x.WordCount).Select(x => (x.FileName, x.WordCount.ToString())).Take(10),
+            "Filename",
+            "Words count");
     }
 
     #endregion

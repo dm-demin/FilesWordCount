@@ -9,7 +9,7 @@ public class ConsoleResultsPrinter : IResultPublisher
     private static readonly object _lock = new ();
 
     /// <inheritdoc/>
-    public void Show(IEnumerable<(string, string)> values)
+    public void Show(IEnumerable<(string, string)> values, string keyColumnName, string valueColumnName)
     {
         lock (_lock)
         {
@@ -18,7 +18,7 @@ public class ConsoleResultsPrinter : IResultPublisher
                 Console.Clear();
             }
 
-            Console.WriteLine("| Filename                                 | Words count          |");
+            Console.WriteLine($"| {keyColumnName.AlignLeft(40)} | {valueColumnName.AlignLeft(20)} |");
             Console.WriteLine("|------------------------------------------+----------------------|");
 
             foreach ((string key, string value) item in values)
