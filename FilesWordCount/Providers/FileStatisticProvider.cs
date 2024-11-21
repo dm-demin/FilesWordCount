@@ -5,7 +5,7 @@ using FilesWordCount.Models;
 namespace FilesWordCount.Providers;
 
 /// <inheritdoc/>
-public class StatisticProvider : IStatisticProvider
+public class FileStatisticProvider : IStatisticProvider
 {
     private readonly IResultPublisher _resultPublisher;
 
@@ -13,7 +13,7 @@ public class StatisticProvider : IStatisticProvider
 
     #region constructor
 
-    public StatisticProvider(IResultPublisher resultPublisher)
+    public FileStatisticProvider(IResultPublisher resultPublisher)
     {
         _resultPublisher = resultPublisher;
         _results = new Dictionary<string, FileMetadata>();

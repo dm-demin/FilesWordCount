@@ -484,3 +484,6 @@ dotnet_diagnostic.ASYNC0004.severity = none
 dotnet_diagnostic.VSSpell001.severity = none
 # Functions should not return null
 dotnet_diagnostic.RETURN0001.severity = none
+
+# SA1010: Opening square brackets should be spaced correctly
+dotnet_diagnostic.SA1010.severity = silent
