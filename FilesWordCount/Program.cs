@@ -1,13 +1,16 @@
 ﻿using System.Diagnostics;
 using FilesWordCount.Controllers;
+using FilesWordCount.Enums;
+using FilesWordCount.Helpers;
 using FilesWordCount.Interfaces;
-using FilesWordCount.Providers;
+using FilesWordCount.Services.Publishers;
+using FilesWordCount.Utils;
 
-IResultPublisher resultPublisher = new ConsoleResultsPrinter();
-IStatisticProvider statisticProvider;
+IResultPublisher resultPublisher = new ConsoleResultPublisher();
 
-string mode = "word";
+string paramMode;
 string path = Directory.GetCurrentDirectory();
+ApplicationMode mode = ApplicationMode.JsonWithBlackList;
 
 if (args.Length < 1 && !Debugger.IsAttached)
 {
@@ -20,7 +23,15 @@ if (args.Length < 1 && !Debugger.IsAttached)
 
 if (args.Length >= 1 && !Debugger.IsAttached)
 {
-    mode = args[0];
+    paramMode = args[0];
+
+    mode = paramMode switch
+    {
+        "1" => ApplicationMode.Console,
+        "2" => ApplicationMode.JsonWithWhiteList,
+        "3" => ApplicationMode.JsonWithBlackList,
+        _ => throw new Exception("Incorrect command")
+    };
 }
 
 if (args.Length >= 2 && !Debugger.IsAttached)
@@ -39,19 +50,19 @@ if (Debugger.IsAttached)
     path = "..\\..\\..\\..\\files";
 }
 
-statisticProvider = mode switch
-{
-    "file" => new FileStatisticProvider(resultPublisher),
-    "word" => new WordStatisticProvider(resultPublisher),
-    _ => throw new Exception("Incorrect command")
-};
+ApplicationContext applicationContext = ApplicationContextHelper.GetApplicationContext(mode);
 
-statisticProvider.AnalyzeFolder(path);
+ApplicationController controller = new ApplicationController(
+    applicationContext.StatisticProvider,
+    applicationContext.ResultPublisher,
+    applicationContext.FolderMonitor);
+
+controller.ProcessFolder(path);
 
 CancellationTokenSource cts = new ();
 
 #pragma warning disable CS4014 // background task starting.
-Task.Run(() => statisticProvider.MonitorFolder(path, cts.Token));
+Task.Run(() => controller.MonitorFolder(path, cts.Token));
 
 // To exit press Enter...
 Console.ReadLine();

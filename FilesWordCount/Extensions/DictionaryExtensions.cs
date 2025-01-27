@@ -2,7 +2,7 @@ namespace FilesWordCount.Extensions;
 
 public static class DictionaryExtensions
 {
-    public static Dictionary<string, int> Plus(this Dictionary<string, int> original, Dictionary<string, int> additional)
+    public static Dictionary<string, int> Plus(this Dictionary<string, int> original, IDictionary<string, int> additional)
     {
         return original.Concat(additional)
                                 .GroupBy(x => x.Key)

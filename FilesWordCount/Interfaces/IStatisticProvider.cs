@@ -1,3 +1,5 @@
+using FilesWordCount.Models;
+
 namespace FilesWordCount.Interfaces;
 
 /// <summary>
@@ -9,11 +11,11 @@ public interface IStatisticProvider
     /// This method calculate statistics for each file in directory just one time.
     /// </summary>
     /// <param name="path">Directory path to process files.</param>
-    void AnalyzeFolder(string path);
+    StatisticCalculationResult AnalyzeFolder(string path);
 
     /// <summary>
-    /// This method subscribe to <paramref name="path"> directory to process files</paramref> Each changes starts updating statistics.
+    /// This method calculate statistics for file.
     /// </summary>
     /// <param name="path">Directory path to process files.</param>
-    void MonitorFolder(string path, CancellationToken cancellationToken);
+    StatisticCalculationResult AnalyzeFile(string path);
 }
